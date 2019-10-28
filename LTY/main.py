@@ -1,5 +1,5 @@
 import numpy as np
-import demo
+from LTY import demo
 
 
 import os

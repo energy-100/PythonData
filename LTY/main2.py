@@ -1,4 +1,4 @@
-import demo2
+from LTY import demo2
 import numpy as np
 from functools import reduce
 z=3
