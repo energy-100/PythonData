@@ -100,7 +100,7 @@ def printPath(pathtemp,fun,num):
         if(fun==4 or fun==2):
             plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="*",s=0.8)  #张老师数据
             # plt.scatter(x, y, color=color, label=fl.split(".")[0], marker="*", s=0.8)  # 佳蕾姐数据
-        elif(fun==6):
+        elif(fun==6 or fun==5):
             xbar=np.asarray(x)+(dt/2)
             ybar=np.asarray(y)/dt
             plt.bar(xbar,ybar,color=color,width=dt,alpha=0.5)
@@ -118,10 +118,11 @@ def printPath(pathtemp,fun,num):
     if (fun == 4):
         fitingpath=pathtemp+"双曲线拟合结果/"
     if (fun == 5):
-        fitingpath = pathtemp + "拟合结果/"
+        fitingpath = pathtemp + "指数积分形式拟合结果/"
+        paras.append(["测量点", "${I_0}$", "${\\tau}$", "D", "${R^2}$"])
     if (fun == 6):
         fitingpath=pathtemp+"双曲线积分形式拟合结果/"
-        paras.append(["测量点","s1","s2","s3","s4","s5","RS"])
+        paras.append(["测量点","${I_0}$","s2","${\\tau}$","${\gamma}$","D", "${R^2}$"])
     print("fitingpath"+fitingpath)
     files = os.listdir(fitingpath)
     # print(files)
@@ -163,15 +164,15 @@ def printPath(pathtemp,fun,num):
             s5 = float(eachdata[4])
             rs = float(eachdata[5])
             paras.append([s1,s2,s3,s4,s5,rs])
-            col_labels=["s1","s2","s3","s4","s5","RS"]
+            col_labels=["s1","s2","s3","s4","s5", "${R^2}$"]
             yfit = s1 * ((s2 + (xfit / s3)) ** (-s4)) + s5
             yfitspot = s1 * ((s2 + (np.asarray(x) / s3)) ** (-s4)) + s5
         elif(fun==2):
             s1 = float(eachdata[0])
             s2 = float(eachdata[1])
             s3 = float(eachdata[2])
-            rs = float(eachdata[3])
-            paras.append([s1,s2,s3,rs])
+            r2 = float(eachdata[3])
+            paras.append([s1,s2,s3,r2])
             yfit = s1 * (np.exp(-(xfit / s2))) +s3
             yfitspot =  s1 * (np.exp(-(np.asarray(x) / s2))) +s3
             flmain = re.sub(r'[A-Za-z]', "", fl.split("-")[1])
@@ -183,8 +184,8 @@ def printPath(pathtemp,fun,num):
             s3 = float(eachdata[2])
             s4 = float(eachdata[3])
             s5 = float(eachdata[4])
-            rs = float(eachdata[5])
-            paras.append([s1,s2,s3,s4,s5,rs])
+            r2 = float(eachdata[5])
+            paras.append([s1,s2,s3,s4,s5,r2])
             yfit = 0
             yfitspot = 0
         elif(fun==4):
@@ -193,8 +194,8 @@ def printPath(pathtemp,fun,num):
             s3 = float(eachdata[2])
             s4 = float(eachdata[3])
             s5 = float(eachdata[4])
-            rs = float(eachdata[5])
-            paras.append([s1,s2,s3,s4,s5,rs])
+            r2 = float(eachdata[5])
+            paras.append([s1,s2,s3,s4,s5,r2])
             yfit = s1 * ((s2 + (xfit / s3)) ** (-s4)) + s5
             yfitspot = s1 * ((s2 + (np.asarray(x) / s3)) ** (-s4)) + s5
             flmain = re.sub(r'[A-Za-z]', "", fl.split("-")[1])         #张老师拟合
@@ -204,12 +205,17 @@ def printPath(pathtemp,fun,num):
             s1 = float(eachdata[0])
             s2 = float(eachdata[1])
             s3 = float(eachdata[2])
-            s4 = float(eachdata[3])
-            s5 = float(eachdata[4])
-            rs = float(eachdata[5])
-            paras.append([s1,s2,s3,s4,s5,rs])
-            yfit = s1 * math.exp(-(xfit/s2)) + s3
-            yfitspot = s1 * ((s2 + (np.asarray(x) / s3)) ** (-s4)) + s5
+            r2 = float(eachdata[3])
+            TimeSpan = float(eachdata[5])
+            yfit = s1 * np.exp(-(xfit/s2)) + s3
+            temp1spot=np.exp(-np.asarray(x)/s2)
+            temp2spot=np.exp(-(np.asarray(x)+TimeSpan)/s2)
+            yfitspot = s1 * s2*(temp1spot-temp2spot) + s3*TimeSpan
+            flmain = re.sub(r'[A-Za-z]', "", fl.split("-")[1])
+            paras.append([flmain,s1,s2,s3,r2])
+            flmain2 = flmain + "双曲线积分拟合"
+            # flmain=fl  #姐蕾姐数据
+            # flmain2 = flmain + "指数积分形式拟合" + "(优度：" + eachdata[-3] + ")"
         elif(fun==6):
             xfit = np.linspace(x[0], x[-1]+(x[1]-x[0]), 1000)
             s1 = float(eachdata[0])
@@ -218,13 +224,11 @@ def printPath(pathtemp,fun,num):
             s4 = float(eachdata[3])
             s5 = float(eachdata[4])
             rs = float(eachdata[5])
-            col_labels = ["测量点","s1", "s2", "s3", "s4", "s5", "RS"]
+            col_labels = ["测量点","s1", "s2", "s3", "s4", "s5", "${R^2}$"]
 
             print(s1,s2,s3,s4,s5)
             TimeSpan=float(eachdata[7])
             # fun = float(eachdata[7])
-            temp1=(1/(1+xfit/s3))**(s4-1)
-            temp2=(1/(1+(xfit+TimeSpan)/s3))**(s4-1)
             temp1spot=(1/(1+np.asarray(x)/s3))**(s4-1)
             temp2spot=(1/(1+(np.asarray(x)+TimeSpan)/s3))**(s4-1)
             yfit = s1 * ((s2 + (xfit / s3)) ** (-s4)) + s5
@@ -246,12 +250,8 @@ def printPath(pathtemp,fun,num):
     # col_labels = ['col1', 'col2', 'col3']
     # row_labels = ['row1', 'row2', 'row3']
     # table_vals = [[11, 12, 13], [21, 22, 23], [28, 29, 30]]
-    print(row_labels)
     # row_labels=["1","2"]
-    print(col_labels)
-    print(paras)
     paras=np.array(paras).T
-    print(paras)
     # plt.table(cellText=paras,colWidths=[4]*len(col_labels),rowLabels=row_labels, colLabels=col_labels,loc='top',fontsize=5.0,picker=0.5)
          #转置
     # plt.table(cellText=paras,rowLabels=row_labels,loc='best', colLabels=col_labels)
@@ -270,7 +270,9 @@ def printPath(pathtemp,fun,num):
     plt.gca().spines['top'].set_color('none')
     plt.gca().spines['bottom'].set_color('none')
     plt.gca().spines['left'].set_color('none')
-    the_table=plt.table(cellText=paras, colWidths=[0.12] * len(col_labels),
+    print(paras)
+    print(len(col_labels))
+    the_table=plt.table(cellText=paras, colWidths=[0.12] * len(paras),
                fontsize=5, loc='center',cellLoc='center')
     plt.title('参数列表')
     # the_table=plt.table(cellText=paras, colWidths=[0.2] * len(col_labels), rowLabels=col_labels,
@@ -282,7 +284,7 @@ def printPath(pathtemp,fun,num):
 # printPath("C:/Users/ENERGY/Desktop/finall2/处理后的原始数据/")
 # printPath("C:/Users/ENERGY/Desktop/新建文件夹 (2)/")
 # printPath("C:/Users/ENERGY/Documents/WeChat Files/wxid_0092780902712/FileStorage/File/2019-10/20190924/",0)
-printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",6,0)
+printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",2,0)
 # printPath("C:/Users/ENERGY/Desktop/工作文件/佳蕾姐曲线/",4,0)
 
 
