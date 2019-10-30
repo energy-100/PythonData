@@ -72,43 +72,50 @@ def printPath(pathtemp,fun,num):
     # title=ftitletext+"实验数据图"
     colornum=0
     dt=0
-    for fl in fileList:
-        x=[]
-        y=[]
+    # for fl in fileList:
+    #     x=[]
+    #     y=[]
+    #
+    #     # 打印文件
+    #     #print(fl)
+    #     f = open(path + fl)  # 读取完txt再读txt里面的类容
+    #     alllines = f.readlines()
+    #
+    #     for eachLine in alllines:
+    #         eachdata = eachLine.split()
+    #         x.append(float(eachdata[0]))
+    #         y.append(float(eachdata[1]))
+    #         dt=float(eachdata[2])
+    #     # print(z)
+    #     # print(x)
+    #     # print(y)
+    #     #ax.plot(x,y,z,label=fl)
+    #     # plt.plot(x,y,label=fl)
+    #     #color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
+    #     #dz = hist.flatten()
+    #     # color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
+    #     # colors.append(color)
+    #     color=colorlist[colornum]
+    #     colornum+=1
+    #     if(fun==4 or fun==2):
+    #         plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="*")  #张老师数据
+    #         # plt.scatter(x, y, color=color, label=fl.split(".")[0], marker="*", s=0.8)  # 佳蕾姐数据
+    #     elif(fun==6 or fun==5):
+    #         xbar=np.asarray(x)+(dt/2)
+    #         ybar=np.asarray(y)/dt
+    #         plt.bar(xbar,ybar,color=color,width=dt,alpha=0.5)
+    #         # plt.scatter(x,y,color=color,label=fl.split(".")[0],marker="*",s=0.8)        #佳蕾姐数据
+    #         # plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="o")
+    #     ylist.append(y)
+    #
+    #
+    #
+    #
 
-        # 打印文件
-        #print(fl)
-        f = open(path + fl)  # 读取完txt再读txt里面的类容
-        alllines = f.readlines()
 
-        for eachLine in alllines:
-            eachdata = eachLine.split()
-            x.append(float(eachdata[0]))
-            y.append(float(eachdata[1]))
-            dt=float(eachdata[2])
-        # print(z)
-        # print(x)
-        # print(y)
-        #ax.plot(x,y,z,label=fl)
-        # plt.plot(x,y,label=fl)
-        #color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
-        #dz = hist.flatten()
-        # color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
-        # colors.append(color)
-        color=colorlist[colornum]
-        colornum+=1
-        if(fun==4 or fun==2):
-            plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="*")  #张老师数据
-            # plt.scatter(x, y, color=color, label=fl.split(".")[0], marker="*", s=0.8)  # 佳蕾姐数据
-        elif(fun==6 or fun==5):
-            xbar=np.asarray(x)+(dt/2)
-            ybar=np.asarray(y)/dt
-            plt.bar(xbar,ybar,color=color,width=dt,alpha=0.5)
-            # plt.scatter(x,y,color=color,label=fl.split(".")[0],marker="*",s=0.8)        #佳蕾姐数据
-            # plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="o")
-        ylist.append(y)
-    fitingpath=""
     #拟合曲线
+    fitingpath = ""
+    spotdatapath=pathtemp+"处理后的原始数据/"
     if (fun == 1):
         fitingpath=pathtemp+"拟合结果/"
     if (fun == 2):
@@ -118,17 +125,17 @@ def printPath(pathtemp,fun,num):
         fitingpath=pathtemp+"拟合结果/"
     if (fun == 4):
         fitingpath=pathtemp+"双曲线拟合结果/"
+        paras.append(["测量点", "${I_0}$", "s2", "${\\tau}$", "${\gamma}$", "D", "${R^2}$"])
     if (fun == 5):
         fitingpath = pathtemp + "指数积分形式拟合结果/"
         paras.append(["测量点", "${I_0}$", "${\\tau}$", "D", "${R^2}$"])
     if (fun == 6):
         fitingpath=pathtemp+"双曲线积分形式拟合结果/"
         paras.append(["测量点","${I_0}$","s2","${\\tau}$","${\gamma}$","D", "${R^2}$"])
-    print("fitingpath"+fitingpath)
+    # print("fitingpath"+fitingpath)
     files = os.listdir(fitingpath)
     # print(files)
     # 先添加目录级别
-
     fileList2=[]
     #print(files)
     for f in files:
@@ -147,13 +154,50 @@ def printPath(pathtemp,fun,num):
     #print(fileList2)
     colornum=0
     for fl in fileList2:
+
+        # 读取原始数据
+        x=[]
+        y=[]
+        rawf=open(spotdatapath + fl)
+        alllines = rawf.readlines()
+
+        for eachLine in alllines:
+            eachdata = eachLine.split()
+            x.append(float(eachdata[0]))
+            y.append(float(eachdata[1]))
+            dt = float(eachdata[2])
+        # print(z)
+        # print(x)
+        # print(y)
+        # ax.plot(x,y,z,label=fl)
+        # plt.plot(x,y,label=fl)
+        # color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
+        # dz = hist.flatten()
+        # color = plt.cm.Set2(random.choice(range(plt.cm.Set2.N)))
+        # colors.append(color)
+        color = colorlist[colornum]
+        # colornum += 1
+        if (fun == 4 or fun == 2):
+            plt.scatter(x, y, color=color, label=re.sub(r'[A-Za-z]', "", fl.split("-")[1]), marker="*")  # 张老师数据
+            # plt.scatter(x, y, color=color, label=fl.split(".")[0], marker="*", s=0.8)  # 佳蕾姐数据
+        elif (fun == 6 or fun == 5):
+            xbar = np.asarray(x) + (dt / 2)
+            ybar = np.asarray(y) / dt
+            plt.bar(xbar, ybar, color=color, width=dt, alpha=0.5)
+            # plt.scatter(x,y,color=color,label=fl.split(".")[0],marker="*",s=0.8)        #佳蕾姐数据
+            # plt.scatter(x,y,color=color,label=re.sub(r'[A-Za-z]',"", fl.split("-")[1]),marker="o")
+        ylist.append(y)
+
+
+
+
         # 打印文件
         f = open(fitingpath + fl)  # 读取完txt再读txt里面的类容
-        print(f)
+        # print(f)
         alllines = f.readlines()
         eachdata=alllines[num].split()
-        print(eachdata[0])
-        xfit=np.linspace(x[0],x[-1],1000)
+        # print(eachdata[0])
+        xfit=np.linspace(x[0],x[-1]+dt,1000)
         yfit=0
         yfitspot=0
         flmain=""
@@ -211,10 +255,12 @@ def printPath(pathtemp,fun,num):
             s3 = float(eachdata[2])
             r2 = float(eachdata[3])
             TimeSpan = float(eachdata[5])
+            print(TimeSpan)
             yfit = s1 * np.exp(-(xfit/s2)) + s3
             temp1spot=np.exp(-np.asarray(x)/s2)
             temp2spot=np.exp(-(np.asarray(x)+TimeSpan)/s2)
             yfitspot = s1 * s2*(temp1spot-temp2spot) + s3*TimeSpan
+            print(yfitspot)
             flmain = re.sub(r'[A-Za-z]', "", fl.split("-")[1])
             paras.append([flmain,s1,s2,s3,r2])
             flmain2 = flmain + "指数积分拟合"
@@ -242,8 +288,7 @@ def printPath(pathtemp,fun,num):
             paras.append([flmain,s1,s2,s3,s4,s5,rs])
             flmain2 = flmain + "双曲线积分拟合"
         yfitlist.append(yfitspot)
-        color=colorlist[colornum]
-
+        # color=colorlist[colornum]
         colornum+=1
         plt.plot(xfit,yfit,color=color,label=flmain2)
         row_labels.append(flmain)
@@ -289,7 +334,12 @@ def printPath(pathtemp,fun,num):
 # printPath("C:/Users/ENERGY/Desktop/finall2/处理后的原始数据/")
 # printPath("C:/Users/ENERGY/Desktop/新建文件夹 (2)/")
 # printPath("C:/Users/ENERGY/Documents/WeChat Files/wxid_0092780902712/FileStorage/File/2019-10/20190924/",0)
-printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,1)
+printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,0)
+# printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,1)
+# printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,2)
+# printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,3)
+# printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,4)
+# printPath("C:/Users/ENERGY/Desktop/工作文件/finall2/",5,5)
 # printPath("C:/Users/ENERGY/Desktop/工作文件/佳蕾姐曲线/",4,0)
 
 
